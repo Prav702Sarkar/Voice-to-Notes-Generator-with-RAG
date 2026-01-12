@@ -1,0 +1,36 @@
+# Web Framework
+flask>=3.0.0
+flask-cors>=4.0.0
+werkzeug>=3.0.0
+
+# Environment & Configuration
+python-dotenv>=1.0.0
+
+# AI/ML APIs
+groq>=0.4.0
+
+# LangChain & RAG
+langchain>=0.1.0
+langchain-community>=0.0.20
+langchain-huggingface>=0.0.1
+langchain-text-splitters>=0.0.1
+langchain-core>=0.1.0
+
+# Vector Store
+faiss-cpu>=1.7.4
+
+# Embeddings & NLP
+sentence-transformers>=2.2.2
+transformers>=4.36.0
+torch>=2.1.0
+tokenizers>=0.15.0
+
+# Deep Learning Backend
+tf-keras>=2.15.0
+
+# Utilities
+numpy>=1.24.0
+requests>=2.31.0
+
+# Production Server
+gunicorn>=21.2.0

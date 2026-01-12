@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LectraNote - Flashcards</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-brain"></i> Lectra<span>Note</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="index.html">Upload Lecture</a></li>
+                <li><a href="flashcards.html" class="active">Flashcards</a></li>
+                <li><a href="quiz.html">Quiz Mode</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <button onclick="window.history.back()" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <h1><i class="fa-solid fa-layer-group"></i> Interactive Flashcards</h1>
+            <p>Study key concepts from your lectures with interactive flashcards</p>
+        </div>
+
+        <!-- No Data State -->
+        <div id="noDataState" class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <h3>No Flashcards Yet</h3>
+            <p>Upload a lecture to automatically generate flashcards from key concepts and definitions</p>
+            <a href="index.html" class="btn btn-primary">
+                <i class="fa-solid fa-upload"></i> Upload Lecture
+            </a>
+        </div>
+
+        <!-- Flashcards Container -->
+        <div id="flashcardsContainer" class="hidden">
+            <div class="flashcard-controls">
+                <div class="progress-info">
+                    <span id="currentCard">1</span> / <span id="totalCards">0</span>
+                </div>
+                <div class="control-buttons">
+                    <button onclick="shuffleCards()" class="btn-icon" title="Shuffle">
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                    <button onclick="resetProgress()" class="btn-icon" title="Reset">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <button onclick="uploadNewLecture()" class="btn-icon" title="Upload New Lecture">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> New Upload
+                    </button>
+                </div>
+            </div>
+
+            <div class="flashcard-wrapper">
+                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="card-label">Term</div>
+                            <div class="card-content" id="cardFront">
+                                Click to reveal
+                            </div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="card-label">Definition</div>
+                            <div class="card-content" id="cardBack">
+                                Definition appears here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button onclick="previousCard()" id="prevBtn" class="nav-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Previous
+                </button>
+                <div class="mastery-buttons">
+                    <button onclick="markCard('difficult')" class="mastery-btn difficult">
+                        <i class="fa-solid fa-times"></i> Difficult
+                    </button>
+                    <button onclick="markCard('medium')" class="mastery-btn medium">
+                        <i class="fa-solid fa-minus"></i> Medium
+                    </button>
+                    <button onclick="markCard('easy')" class="mastery-btn easy">
+                        <i class="fa-solid fa-check"></i> Easy
+                    </button>
+                </div>
+                <button onclick="nextCard()" id="nextBtn" class="nav-btn">
+                    Next <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/flashcards.js"></script>
+</body>
+</html>

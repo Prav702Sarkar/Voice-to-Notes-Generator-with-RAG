@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LectraNote - Quiz Mode</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-brain"></i> Lectra<span>Note</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="index.html">Upload Lecture</a></li>
+                <li><a href="flashcards.html">Flashcards</a></li>
+                <li><a href="quiz.html" class="active">Quiz Mode</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <button onclick="window.history.back()" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <h1><i class="fa-solid fa-clipboard-list"></i> Interactive Quiz</h1>
+            <p>Test your knowledge with AI-generated quiz questions</p>
+        </div>
+
+        <!-- No Data State -->
+        <div id="noQuizState" class="empty-state">
+            <i class="fa-solid fa-file-circle-question"></i>
+            <h3>No Quiz Available</h3>
+            <p>Upload a lecture to automatically generate quiz questions based on the content</p>
+            <a href="index.html" class="btn btn-primary">
+                <i class="fa-solid fa-upload"></i> Upload Lecture
+            </a>
+        </div>
+
+        <!-- Quiz Start Screen -->
+        <div id="quizStartScreen" class="hidden quiz-start">
+            <div class="quiz-info-card">
+                <h2>Ready to Test Your Knowledge?</h2>
+                <div class="quiz-stats">
+                    <div class="stat-item">
+                        <i class="fa-solid fa-list-ol"></i>
+                        <span id="questionCount">0</span>
+                        <span class="stat-label">Questions</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>No time limit</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fa-solid fa-star"></i>
+                        <span>Multiple Choice</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="startQuiz()" class="btn btn-large">
+                        <i class="fa-solid fa-play"></i> Start Quiz
+                    </button>
+                    <button onclick="uploadNewLecture()" class="btn btn-secondary">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> New Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quizContainer" class="hidden">
+            <div class="quiz-progress">
+                <div class="progress-text">
+                    Question <span id="currentQuestion">1</span> of <span id="totalQuestions">0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="quizProgressFill"></div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <h3 class="question-text" id="questionText">Question will appear here</h3>
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be dynamically inserted -->
+                </div>
+                <button onclick="submitAnswer()" id="submitBtn" class="btn btn-primary" disabled>
+                    Submit Answer
+                </button>
+            </div>
+
+            <div class="quiz-navigation hidden" id="quizNavigation">
+                <button onclick="nextQuestion()" class="btn btn-primary">
+                    Next Question <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden">
+            <div class="results-card">
+                <div class="results-icon">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h2>Quiz Complete!</h2>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <div class="score-text">
+                            <span id="scorePercentage">0</span>%
+                        </div>
+                    </div>
+                </div>
+                <div class="results-stats">
+                    <div class="result-stat correct">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <span id="correctCount">0</span> Correct
+                    </div>
+                    <div class="result-stat incorrect">
+                        <i class="fa-solid fa-times-circle"></i>
+                        <span id="incorrectCount">0</span> Incorrect
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button onclick="retakeQuiz()" class="btn btn-secondary">
+                        <i class="fa-solid fa-rotate-right"></i> Retake Quiz
+                    </button>
+                    <a href="flashcards.html" class="btn btn-primary">
+                        <i class="fa-solid fa-layer-group"></i> Study Flashcards
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/quiz.js"></script>
+</body>
+</html>

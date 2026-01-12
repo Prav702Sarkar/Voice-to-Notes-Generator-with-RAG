@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LectraNote - Upload Lecture</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-brain"></i> Lectra<span>Note</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="index.html" class="active">Upload Lecture</a></li>
+                <li><a href="flashcards.html">Flashcards</a></li>
+                <li><a href="quiz.html">Quiz Mode</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <header>
+            <button onclick="window.history.back()" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <h1 class="page-title">Upload Your Lecture</h1>
+            <p class="subtitle">Transform voice lectures into structured study notes using RAG & BERT</p>
+        </header>
+
+        <section class="upload-container" id="dropZone">
+            <input type="file" id="audioFile" accept="audio/*" hidden>
+            
+            <div class="icon-box">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            
+            <h3>Upload your Lecture</h3>
+            <p>Drag & drop or <span class="browse-btn" onclick="document.getElementById('audioFile').click()">browse</span></p>
+            <p class="file-info" id="fileName">Supported formats: MP3, WAV, M4A</p>
+            
+            <!-- Selected File Display -->
+            <div id="selectedFileDisplay" class="selected-file hidden">
+                <div class="file-preview">
+                    <i class="fa-solid fa-file-audio"></i>
+                    <span id="selectedFileName" class="file-name"></span>
+                </div>
+                <button class="remove-file-btn" onclick="removeFile()" title="Remove file">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <!-- Microphone Recording Section -->
+            <div class="microphone-section">
+                <div class="mic-header">
+                    <i class="fa-solid fa-microphone"></i>
+                    <span>Or Record Audio Directly</span>
+                </div>
+                <div class="mic-controls">
+                    <button id="startRecordBtn" class="mic-btn" onclick="startRecording()">
+                        <i class="fa-solid fa-circle"></i> Start Recording
+                    </button>
+                    <button id="stopRecordBtn" class="mic-btn stop-btn hidden" onclick="stopRecording()">
+                        <i class="fa-solid fa-stop"></i> Stop Recording
+                    </button>
+                    <div id="recordingIndicator" class="recording-indicator hidden">
+                        <span class="pulse-dot"></span>
+                        <span id="recordingTime">00:00</span>
+                    </div>
+                </div>
+                <p id="recordingStatus" class="recording-status"></p>
+            </div>
+
+            <!-- Context/Prompt Input Section -->
+            <div class="prompt-section">
+                <label for="contextPrompt">
+                    <i class="fa-solid fa-comment-dots"></i> Additional Context (Optional)
+                </label>
+                <textarea 
+                    id="contextPrompt" 
+                    class="context-input" 
+                    placeholder="E.g., 'This is a lecture about quantum mechanics for undergraduate physics students' or 'Focus on practical applications and real-world examples'"
+                    rows="3"
+                ></textarea>
+                <p class="prompt-hint">💡 Provide context to help the AI generate more relevant study materials</p>
+            </div>
+            
+            <div class="quiz-options">
+                <label for="quizCount"><i class="fa-solid fa-sliders"></i> Number of Quiz Questions:</label>
+                <select id="quizCount" class="quiz-select">
+                    <option value="3">3 Questions</option>
+                    <option value="5" selected>5 Questions</option>
+                    <option value="10">10 Questions</option>
+                    <option value="15">15 Questions</option>
+                </select>
+            </div>
+            
+            <button id="generateBtn" onclick="processLecture()">
+                <i class="fa-solid fa-magic"></i> Generate Study Guide
+            </button>
+        </section>
+
+        <div id="loadingState" class="hidden upload-loading-screen">
+            <div class="loading-content">
+                <div class="loading-animation">
+                    <div class="loading-ring"></div>
+                    <div class="loading-ring delay-1"></div>
+                    <div class="loading-ring delay-2"></div>
+                    <i class="fa-solid fa-brain loading-icon"></i>
+                </div>
+                <h2 id="loadingText">🎧 Processing Your Lecture...</h2>
+                <p class="loading-description">AI is analyzing your audio with Whisper, BERT & RAG</p>
+                
+                <div class="loading-steps">
+                    <div class="loading-step" id="loadStep1">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>Transcribing Audio</span>
+                    </div>
+                    <div class="loading-step" id="loadStep2">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>Analyzing Content</span>
+                    </div>
+                    <div class="loading-step" id="loadStep3">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Generating Materials</span>
+                    </div>
+                </div>
+                
+                <div class="loading-progress">
+                    <div class="progress-bar-upload">
+                        <div class="progress-fill-upload" id="uploadProgressFill"></div>
+                    </div>
+                    <p class="progress-text-upload">Please wait, this may take a minute...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsArea" class="hidden">
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('summary')">Summary</button>
+                <button class="tab-btn" onclick="switchTab('definitions')">Definitions</button>
+                <button class="tab-btn" onclick="switchTab('quiz')">Quiz</button>
+            </div>
+
+            <div class="content-box">
+                <div id="summary" class="tab-content active">
+                    </div>
+                <div id="definitions" class="tab-content">
+                    </div>
+                <div id="quiz" class="tab-content">
+                    </div>
+            </div>
+
+            <div class="transcript-box">
+                <h4><i class="fa-solid fa-file-audio"></i> Transcript Preview</h4>
+                <p id="transcriptText">...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

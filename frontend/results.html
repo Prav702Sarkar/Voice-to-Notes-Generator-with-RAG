@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LectraNote - Results</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-brain"></i> Lectra<span>Note</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="index.html">Upload Lecture</a></li>
+                <li><a href="flashcards.html">Flashcards</a></li>
+                <li><a href="quiz.html">Quiz Mode</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <!-- Processing State -->
+        <div id="processingState" class="processing-container hidden">
+            <div class="processing-card">
+                <div class="processing-animation">
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-ring delay-1"></div>
+                    <div class="pulse-ring delay-2"></div>
+                    <i class="fa-solid fa-brain processing-icon"></i>
+                </div>
+                <h2 id="processingTitle">Processing Your Lecture</h2>
+                <p id="processingMessage" class="processing-text">Initializing AI models...</p>
+                
+                <div class="processing-steps">
+                    <div class="step" id="step1">
+                        <div class="step-icon">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Transcribing Audio</h4>
+                            <p>Converting speech to text with Whisper AI</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step2">
+                        <div class="step-icon">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Analyzing Content</h4>
+                            <p>Processing with BERT embeddings & RAG</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step3">
+                        <div class="step-icon">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Generating Study Materials</h4>
+                            <p>Creating summaries, definitions, and quizzes</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="mainProgressFill"></div>
+                    </div>
+                    <p class="progress-text"><span id="progressPercent">0</span>% Complete</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Display -->
+        <div id="resultsDisplay" class="hidden">
+            <div class="results-header">
+                <button onclick="window.history.back()" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </button>
+                <div class="success-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Processing Complete</span>
+                </div>
+                <h1>Your Study Materials Are Ready!</h1>
+                <p class="results-subtitle">AI-generated content from your lecture</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="flashcards.html" class="action-card">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <h3>Study Flashcards</h3>
+                    <p>Interactive cards for key terms</p>
+                </a>
+                <a href="quiz.html" class="action-card">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <h3>Take Quiz</h3>
+                    <p>Test your knowledge</p>
+                </a>
+                <a href="index.html" class="action-card">
+                    <i class="fa-solid fa-upload"></i>
+                    <h3>Upload Another</h3>
+                    <p>Process new lecture</p>
+                </a>
+            </div>
+
+            <!-- Tabs for Content -->
+            <div class="results-tabs">
+                <button class="result-tab-btn active" onclick="switchResultTab('summary')">
+                    <i class="fa-solid fa-file-lines"></i> Summary
+                </button>
+                <button class="result-tab-btn" onclick="switchResultTab('definitions')">
+                    <i class="fa-solid fa-book"></i> Definitions
+                </button>
+                <button class="result-tab-btn" onclick="switchResultTab('quiz')">
+                    <i class="fa-solid fa-question-circle"></i> Quiz
+                </button>
+                <button class="result-tab-btn" onclick="switchResultTab('transcript')">
+                    <i class="fa-solid fa-closed-captioning"></i> Transcript
+                </button>
+            </div>
+
+            <!-- Content Box -->
+            <div class="results-content-box">
+                <div id="result-summary" class="result-tab-content active">
+                    <h2><i class="fa-solid fa-file-lines"></i> Lecture Summary</h2>
+                    <div id="summaryContent" class="content-display"></div>
+                </div>
+
+                <div id="result-definitions" class="result-tab-content">
+                    <h2><i class="fa-solid fa-book"></i> Key Definitions</h2>
+                    <div id="definitionsContent" class="content-display"></div>
+                </div>
+
+                <div id="result-quiz" class="result-tab-content">
+                    <h2><i class="fa-solid fa-question-circle"></i> Quiz Questions</h2>
+                    <div id="quizContent" class="content-display"></div>
+                </div>
+
+                <div id="result-transcript" class="result-tab-content">
+                    <h2><i class="fa-solid fa-closed-captioning"></i> Full Transcript</h2>
+                    <div id="transcriptContent" class="content-display transcript-text"></div>
+                </div>
+            </div>
+
+            <!-- Download Options -->
+            <div class="download-section">
+                <h3><i class="fa-solid fa-download"></i> Download Study Materials</h3>
+                <div class="download-buttons">
+                    <button onclick="downloadContent('summary')" class="btn btn-secondary">
+                        <i class="fa-solid fa-file-pdf"></i> Download Summary
+                    </button>
+                    <button onclick="downloadContent('all')" class="btn btn-primary">
+                        <i class="fa-solid fa-file-archive"></i> Download All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden">
+            <div class="error-card">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <h2>Processing Failed</h2>
+                <p id="errorMessage">An error occurred while processing your lecture.</p>
+                <div class="error-actions">
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fa-solid fa-rotate-left"></i> Try Again
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/results.js"></script>
+</body>
+</html>
