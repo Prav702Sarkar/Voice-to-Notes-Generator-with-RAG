@@ -1,8 +1,11 @@
 import os
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, send_file
 from werkzeug.utils import secure_filename
 from app.services.audio_service import AudioService
 from app.services.rag_service import RagService
+from app.services.pdf_service import PdfService
+from datetime import datetime
+from io import BytesIO
 
 api_bp = Blueprint('api', __name__)
 
@@ -85,3 +88,39 @@ def process_lecture():
         error_message = str(e)
         print(f"Error processing lecture: {error_message}")
         return jsonify({"error": error_message}), 500
+
+
+@api_bp.route('/download-pdf', methods=['POST'])
+def download_pdf():
+    """Generate and download structured PDF with all study materials"""
+    try:
+        # Get lecture data from request
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        print(f"Generating PDF with {len(data)} sections...")
+        
+        # Generate PDF
+        pdf_service = PdfService()
+        pdf_content = pdf_service.generate_pdf(data)
+        
+        # Create filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"lecture_notes_{timestamp}.pdf"
+        
+        print(f"PDF generated successfully: {filename}")
+        
+        # Send file
+        return send_file(
+            BytesIO(pdf_content),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=filename
+        )
+    
+    except Exception as e:
+        error_message = str(e)
+        print(f"Error generating PDF: {error_message}")
+        return jsonify({"error": f"Failed to generate PDF: {error_message}"}), 500

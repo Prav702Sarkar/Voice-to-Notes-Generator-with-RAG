@@ -251,41 +251,114 @@ function switchResultTab(tabName) {
     event.target.classList.add('active');
 }
 
-// Download functionality
+// Download functionality - now supports PDF
 function downloadContent(type) {
     const savedData = JSON.parse(localStorage.getItem('lectureData'));
     
-    let content = '';
-    let filename = '';
-    
     if (type === 'summary') {
-        content = stripHTML(savedData.summary);
-        filename = 'lecture-summary.txt';
+        // Download summary as PDF
+        downloadPdf({
+            summary: savedData.summary,
+            definitions: '',
+            quiz: '',
+            transcript: '',
+            flashcards: []
+        }, event.target);
     } else if (type === 'all') {
-        content = 'LECTURE SUMMARY\n' + '='.repeat(50) + '\n\n';
-        content += stripHTML(savedData.summary) + '\n\n';
-        content += 'KEY DEFINITIONS\n' + '='.repeat(50) + '\n\n';
-        content += stripHTML(savedData.definitions) + '\n\n';
-        content += 'QUIZ QUESTIONS\n' + '='.repeat(50) + '\n\n';
-        content += stripHTML(savedData.quiz) + '\n\n';
-        content += 'FULL TRANSCRIPT\n' + '='.repeat(50) + '\n\n';
-        content += savedData.transcript;
-        filename = 'lecture-study-materials.txt';
+        // Download all materials as PDF
+        downloadPdf({
+            summary: savedData.summary,
+            definitions: savedData.definitions,
+            quiz: savedData.quiz,
+            transcript: savedData.transcript,
+            flashcards: savedData.flashcards || []
+        }, event.target);
     }
-    
-    // Create download
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
 }
 
-// Strip HTML tags for plain text download
+// Download PDF from backend
+function downloadPdf(lectureData, downloadBtn) {
+    // Show loading indicator
+    const originalText = downloadBtn.innerHTML;
+    downloadBtn.disabled = true;
+    downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating PDF...';
+    
+    // Send data to backend
+    fetch('/api/download-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(lectureData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.error || 'Failed to generate PDF');
+            });
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        // Generate filename with timestamp
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, '-').split('T')[0];
+        a.download = `lecture_notes_${timestamp}.pdf`;
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        // Reset button
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = originalText;
+        
+        // Show success message
+        showNotification('PDF downloaded successfully!');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(`Error generating PDF: ${error.message}`);
+        
+        // Reset button
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = originalText;
+    });
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification success';
+    notification.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${message}`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        animation: slideIn 0.3s ease-in-out;
+    `;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Strip HTML tags for plain text download (kept for backward compatibility)
 function stripHTML(html) {
     const tmp = document.createElement('div');
     tmp.innerHTML = html;
